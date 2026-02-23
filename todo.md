@@ -78,7 +78,7 @@ Must include:
 - Brief project overview (what it does, dataset used)
 - **How to run** section with copy-pastable commands:
   ```bash
-  pip install -r requirements.txt
+  uv pip install -r requirements.txt
   python scripts/ingest_lfw.py --seed 42
   python scripts/generate_pairs.py --seed 42
   python scripts/benchmark.py
