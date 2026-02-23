@@ -30,7 +30,10 @@ def _validate_pair_batches(
 
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     a_arr, b_arr = _validate_pair_batches(a, b)
+    # einsum("ij,ij->i") = row-wise dot product over all pairs at once.
+    # So this is the vectorized version of the inner j-loop in one NumPy call.
     numerator = np.einsum("ij,ij->i", a_arr, b_arr, optimize=True)
+    # Same trick to get row-wise squared norms without writing explicit loops.
     a_sq = np.einsum("ij,ij->i", a_arr, a_arr, optimize=True)
     b_sq = np.einsum("ij,ij->i", b_arr, b_arr, optimize=True)
     denominator = np.sqrt(a_sq * b_sq)
@@ -46,6 +49,7 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 def euclidean_distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     a_arr, b_arr = _validate_pair_batches(a, b)
     diff = a_arr - b_arr
+    # Row-wise sum of squared diffs (again, same pattern as the loop baseline).
     squared = np.einsum("ij,ij->i", diff, diff, optimize=True)
     return np.sqrt(squared)
 
@@ -55,7 +59,8 @@ def cosine_similarity_loop(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     n_rows, n_cols = a_arr.shape
     scores = np.zeros(n_rows, dtype=np.float64)
 
-    # Intentionally plain Python math for a baseline against vectorized NumPy.
+    # Intentionally plain nested loops so this stays a "vanilla Python" baseline.
+    # Outer loop = each pair, inner loop = each feature in that pair.
     for i in range(n_rows):
         dot = 0.0
         a_norm_sq = 0.0
@@ -82,6 +87,7 @@ def euclidean_distance_loop(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     n_rows, n_cols = a_arr.shape
     dists = np.zeros(n_rows, dtype=np.float64)
 
+    # Same idea as cosine loop: keep it explicit and simple for fair comparison.
     for i in range(n_rows):
         row_a = a_arr[i]
         row_b = b_arr[i]
