@@ -7,14 +7,22 @@ from sklearn.datasets import fetch_lfw_pairs
 
 
 def ingest_lfw_dataset(seed: int):
-    np.random.seed(seed)
+    #np.random.seed(seed)
 
-    lfw_pairs = fetch_lfw_pairs(data_home="./data")
+    #hardcode seed to 42 if not provided
+    if seed is None:
+        seed = 42
+
+    lfw_pairs = fetch_lfw_pairs(data_home="./data", subset="10_folds")
 
     n_samples = lfw_pairs.data.shape[0]
     test_count = n_samples // 10
     train_count = n_samples - test_count
-    total_identities = len(np.unique(lfw_pairs.target))
+    lfw_root = os.path.join("data", "lfw_home", "lfw_funneled")
+    total_identities = sum(
+        os.path.isdir(os.path.join(lfw_root, name))
+        for name in os.listdir(lfw_root)
+    )
 
     # fetch_lfw_pairs stores pairs as flattened rows; derive image shape from pair dimensions
     # each row is 2 images concatenated: (N, 2*H*W), and pair_shape gives (2, H, W)
