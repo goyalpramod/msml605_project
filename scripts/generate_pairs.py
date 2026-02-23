@@ -28,6 +28,7 @@ def _load_manifest(manifest_path: str) -> dict:
             f"Manifest not found at {manifest_path}. "
             "Run `python scripts/ingest_lfw.py --seed 42` first."
         )
+    # Treat the ingestion manifest as the contract for what "correct" data looks like.
     with open(manifest_path, "r") as f:
         return json.load(f)
 
@@ -55,6 +56,8 @@ def generate_pairs(
         )
 
     try:
+        # Important: do not auto-download here. Pair generation should only run on
+        # data already prepared by ingest_lfw so the pipeline order stays explicit.
         train_pairs = fetch_lfw_pairs(
             data_home=data_home,
             subset="train",
@@ -72,6 +75,7 @@ def generate_pairs(
         ) from exc
 
     expected_shape = tuple(manifest.get("image_shape", []))
+    # Defensive checks keep this step reproducible even if data/config drifts.
     if expected_shape and train_pairs.pairs.shape[2:] != expected_shape:
         raise ValueError(
             f"Manifest image_shape {expected_shape} does not match loaded data "
