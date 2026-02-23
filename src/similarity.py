@@ -11,7 +11,9 @@ __all__ = [
 ]
 
 
-def _validate_pair_batches(a: np.ndarray, b: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def _validate_pair_batches(
+    a: np.ndarray, b: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
     # Force a shared float dtype up front so loop and NumPy paths are comparable.
     a_arr = np.asarray(a, dtype=np.float64)
     b_arr = np.asarray(b, dtype=np.float64)
@@ -28,8 +30,13 @@ def _validate_pair_batches(a: np.ndarray, b: np.ndarray) -> tuple[np.ndarray, np
 
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     a_arr, b_arr = _validate_pair_batches(a, b)
-    numerator = np.sum(a_arr * b_arr, axis=1)
-    denominator = np.linalg.norm(a_arr, axis=1) * np.linalg.norm(b_arr, axis=1)
+    # einsum("ij,ij->i") = row-wise dot product over all pairs at once.
+    # So this is the vectorized version of the inner j-loop in one NumPy call.
+    numerator = np.einsum("ij,ij->i", a_arr, b_arr, optimize=True)
+    # Same trick to get row-wise squared norms without writing explicit loops.
+    a_sq = np.einsum("ij,ij->i", a_arr, a_arr, optimize=True)
+    b_sq = np.einsum("ij,ij->i", b_arr, b_arr, optimize=True)
+    denominator = np.sqrt(a_sq * b_sq)
     # If either row is all zeros, cosine is undefined; return 0.0 instead of NaN.
     return np.divide(
         numerator,
@@ -41,18 +48,35 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 
 def euclidean_distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     a_arr, b_arr = _validate_pair_batches(a, b)
-    return np.linalg.norm(a_arr - b_arr, axis=1)
+    diff = a_arr - b_arr
+    # Row-wise sum of squared diffs (again, same pattern as the loop baseline).
+    squared = np.einsum("ij,ij->i", diff, diff, optimize=True)
+    return np.sqrt(squared)
 
 
 def cosine_similarity_loop(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     a_arr, b_arr = _validate_pair_batches(a, b)
-    n_rows = a_arr.shape[0]
+    n_rows, n_cols = a_arr.shape
     scores = np.zeros(n_rows, dtype=np.float64)
 
-    # Keep this intentionally simple/slow as the benchmark baseline.
+    # Intentionally plain nested loops so this stays a "vanilla Python" baseline.
+    # Outer loop = each pair, inner loop = each feature in that pair.
     for i in range(n_rows):
-        dot = float(np.dot(a_arr[i], b_arr[i]))
-        denom = float(np.linalg.norm(a_arr[i]) * np.linalg.norm(b_arr[i]))
+        dot = 0.0
+        a_norm_sq = 0.0
+        b_norm_sq = 0.0
+
+        row_a = a_arr[i]
+        row_b = b_arr[i]
+
+        for j in range(n_cols):
+            a_val = float(row_a[j])
+            b_val = float(row_b[j])
+            dot += a_val * b_val
+            a_norm_sq += a_val * a_val
+            b_norm_sq += b_val * b_val
+
+        denom = float(np.sqrt(a_norm_sq * b_norm_sq))
         scores[i] = dot / denom if denom > 0 else 0.0
 
     return scores
@@ -60,11 +84,20 @@ def cosine_similarity_loop(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 
 def euclidean_distance_loop(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     a_arr, b_arr = _validate_pair_batches(a, b)
-    n_rows = a_arr.shape[0]
+    n_rows, n_cols = a_arr.shape
     dists = np.zeros(n_rows, dtype=np.float64)
 
+    # Same idea as cosine loop: keep it explicit and simple for fair comparison.
     for i in range(n_rows):
-        dists[i] = float(np.sqrt(np.sum((a_arr[i] - b_arr[i]) ** 2)))
+        row_a = a_arr[i]
+        row_b = b_arr[i]
+        squared_sum = 0.0
+
+        for j in range(n_cols):
+            diff = float(row_a[j]) - float(row_b[j])
+            squared_sum += diff * diff
+
+        dists[i] = float(np.sqrt(squared_sum))
 
     return dists
 
