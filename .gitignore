@@ -208,4 +208,6 @@ __marimo__/
 
 #lfw data
 data/lfw_home
-outputs/manifest.json
+
+#outputs
+outputs/
