@@ -61,9 +61,9 @@ Exports:
 uv pip install -r requirements.txt
 # or: pip install -r requirements.txt
 
-python scripts/ingest_lfw.py --seed 42
-python scripts/generate_pairs.py --seed 42
-python scripts/benchmark.py
+uv run python scripts/ingest_lfw.py --seed 42
+uv run python scripts/generate_pairs.py --seed 42
+uv run python scripts/benchmark.py
 ```
 
 ## Data Artifacts and Contracts

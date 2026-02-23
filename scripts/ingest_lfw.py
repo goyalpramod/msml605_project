@@ -39,7 +39,8 @@ def ingest_lfw_dataset(seed: int):
     with open("outputs/manifest.json", "w") as f:
         json.dump(manifest, f, indent=4, sort_keys=True)
 
-    return train_pairs
+    # return tuple of (train_pairs, test_pairs) in case we need either/both
+    return train_pairs, test_pairs
 
 
 if __name__ == "__main__":
@@ -51,5 +52,6 @@ if __name__ == "__main__":
 
 # to use the data from this script kindly do the following
 # from scripts.ingest_lfw import ingest_lfw_dataset
-# train_pairs = ingest_lfw_dataset(seed=42)
+# train_pairs, test_pairs = ingest_lfw_dataset(seed=42)
 # print(train_pairs.data.shape)
+# print(test_pairs.data.shape)
