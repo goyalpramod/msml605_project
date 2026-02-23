@@ -11,7 +11,9 @@ __all__ = [
 ]
 
 
-def _validate_pair_batches(a: np.ndarray, b: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def _validate_pair_batches(
+    a: np.ndarray, b: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
     # Force a shared float dtype up front so loop and NumPy paths are comparable.
     a_arr = np.asarray(a, dtype=np.float64)
     b_arr = np.asarray(b, dtype=np.float64)

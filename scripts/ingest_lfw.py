@@ -9,7 +9,7 @@ from sklearn.datasets import fetch_lfw_pairs
 def ingest_lfw_dataset(seed: int):
     if seed is None:
         seed = 42
-    
+
     np.random.seed(seed)
 
     train_pairs = fetch_lfw_pairs(data_home="./data", subset="train")
@@ -19,8 +19,7 @@ def ingest_lfw_dataset(seed: int):
     test_count = test_pairs.pairs.shape[0]
     lfw_root = os.path.join("data", "lfw_home", "lfw_funneled")
     total_identities = sum(
-        os.path.isdir(os.path.join(lfw_root, name))
-        for name in os.listdir(lfw_root)
+        os.path.isdir(os.path.join(lfw_root, name)) for name in os.listdir(lfw_root)
     )
 
     # fetch_lfw_pairs stores pairs as flattened rows; derive image shape from pair dimensions
