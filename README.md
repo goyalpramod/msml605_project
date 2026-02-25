@@ -56,14 +56,90 @@ Exports:
 - Checks numerical agreement with `np.allclose(..., atol=1e-6)`.
 - Prints timing summary lines.
 
-## How To Run
+## Setup and Run
+
+### Option A: Use `uv` (recommended)
+
+#### 1) Install `uv` (choose one method)
+
+##### Method 1: Official installer (macOS/Linux)
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+##### Method 2: Official installer (Windows PowerShell)
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+##### Method 3: Install via `pipx`
+```bash
+pipx install uv
+```
+
+##### Method 4: Install via `pip` (fallback)
+```bash
+pip install uv
+```
+
+Verify install:
+```bash
+uv --version
+```
+
+#### 2) Create and activate a virtual environment
+```bash
+uv venv .venv
+```
+
+Activate it:
+
+Windows (PowerShell):
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS/Linux:
+```bash
+source .venv/bin/activate
+```
+
+#### 3) Install dependencies and run
 ```bash
 uv pip install -r requirements.txt
-# or: pip install -r requirements.txt
 
-uv run python scripts/ingest_lfw.py --seed 42
-uv run python scripts/generate_pairs.py --seed 42
-uv run python scripts/benchmark.py
+python scripts/ingest_lfw.py --seed 42
+python scripts/generate_pairs.py --seed 42
+python scripts/benchmark.py
+```
+
+### Option B: Classic `venv` + `pip`
+
+#### 1) Create and activate a virtual environment
+```bash
+python -m venv .venv
+```
+
+Activate it:
+
+Windows (PowerShell):
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS/Linux:
+```bash
+source .venv/bin/activate
+```
+
+#### 2) Install dependencies and run
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+
+python scripts/ingest_lfw.py --seed 42
+python scripts/generate_pairs.py --seed 42
+python scripts/benchmark.py
 ```
 
 ## Data Artifacts and Contracts
