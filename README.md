@@ -87,12 +87,12 @@ Verify install:
 uv --version
 ```
 
-#### 2) Create and activate a virtual environment
+#### 2) Create a virtual environment
 ```bash
 uv venv .venv
 ```
 
-Activate it:
+Activation is optional when using `uv pip` and `uv run`:
 
 Windows (PowerShell):
 ```powershell
@@ -108,9 +108,9 @@ source .venv/bin/activate
 ```bash
 uv pip install -r requirements.txt
 
-python scripts/ingest_lfw.py --seed 42
-python scripts/generate_pairs.py --seed 42
-python scripts/benchmark.py
+uv run python scripts/ingest_lfw.py --seed 42
+uv run python scripts/generate_pairs.py --seed 42
+uv run python scripts/benchmark.py
 ```
 
 ### Option B: Classic `venv` + `pip`
