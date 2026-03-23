@@ -251,13 +251,13 @@ Both add dependencies as needed. New expected additions:
 - [ ] Clean-clone test passes; `v0.2` tagged
 
 **Arun**
-- [ ] `scripts/generate_pairs.py` updated with `--cap-per-identity` (required data-centric change)
-- [ ] `src/plotting.py` with ROC, confusion matrix, and score distribution plot functions
-- [ ] `scripts/error_analysis.py` with 2 defined slices + representative examples
-- [ ] `tests/test_generate_pairs.py` with determinism, cap, and balance ratio checks
-- [ ] `tests/test_integration.py` using synthetic fixtures (< 5 seconds, no downloads)
-- [ ] README updated with M2 summary + How-to-run for all new scripts + artifact locations
-- [ ] Report sections 4–5 + closing complete
+- [x] `scripts/generate_pairs.py` updated with `--cap-per-identity` and `--val-fraction` (identity-level split + capping + 1:1 rebalance)
+- [x] `src/plotting.py` with ROC, confusion matrix, and score distribution plot functions
+- [x] `scripts/error_analysis.py` with 2 defined slices + representative examples
+- [x] `tests/test_generate_pairs.py` with determinism, cap, balance ratio, leakage, and schema checks (13 tests)
+- [ ] `tests/test_integration.py` using synthetic fixtures (< 5 seconds, no downloads) — blocked on Pramod's evaluate.py
+- [x] README updated with M2 summary + How-to-run for all new scripts + artifact locations
+- [ ] Report sections 4–5 + closing complete — blocked on real scored data from evaluate.py
 
 **Shared outputs (grader checks)**
 - [ ] `outputs/runs_log.json` with ≥ 5 tracked runs
