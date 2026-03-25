@@ -260,8 +260,8 @@ Both add dependencies as needed. New expected additions:
 - [ ] Report sections 4–5 + closing complete — blocked on real scored data from evaluate.py
 
 **Shared outputs (grader checks)**
-- [ ] `outputs/runs_log.json` with ≥ 5 tracked runs
-- [ ] ROC-style plot saved (e.g., `outputs/roc_run_01.png`)
-- [ ] Confusion matrix plot committed or in report
+- [x] `outputs/runs_log.json` with ≥ 5 tracked runs
+- [x] ROC-style plot saved (e.g., `outputs/roc_run_01.png`)
+- [x] Confusion matrix plot committed or in report
 - [ ] `reports/milestone2_report.pdf` (~2 pages, all sections complete)
 - [ ] Tagged `v0.2` pointing to the reproducible commit
