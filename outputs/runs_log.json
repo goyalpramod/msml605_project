@@ -1,0 +1,105 @@
+[
+  {
+    "run_id": "run_01",
+    "timestamp": "2026-03-25T20:33:28.973807+00:00",
+    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "config": {
+      "pairs": "outputs/pairs_val.npz",
+      "similarity": "cosine",
+      "mode": "sweep",
+      "score_direction": "higher_is_same"
+    },
+    "metrics": {
+      "auc": 0.6109,
+      "suggested_threshold": 0.9497,
+      "threshold_rule_used": "balanced_acc"
+    },
+    "threshold": 0.949748743718593,
+    "note": "Baseline threshold sweep on val split"
+  },
+  {
+    "run_id": "run_02",
+    "timestamp": "2026-03-25T20:33:34.350499+00:00",
+    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "config": {
+      "pairs": "outputs/pairs_val.npz",
+      "similarity": "cosine",
+      "mode": "select",
+      "score_direction": "higher_is_same"
+    },
+    "metrics": {
+      "balanced_acc": 0.5899,
+      "f1": 0.4291,
+      "eer": 0.415,
+      "rule_used": "balanced_acc",
+      "TP": 59,
+      "FP": 57,
+      "TN": 241,
+      "FN": 100
+    },
+    "threshold": 0.949748743718593,
+    "note": "Threshold selection via balanced accuracy"
+  },
+  {
+    "run_id": "run_03",
+    "timestamp": "2026-03-25T20:34:39.556818+00:00",
+    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "config": {
+      "pairs": "outputs/pairs_test.npz",
+      "similarity": "cosine",
+      "mode": "final",
+      "score_direction": "higher_is_same"
+    },
+    "metrics": {
+      "balanced_acc": 0.614,
+      "f1": 0.5151,
+      "eer": 0.372,
+      "TP": 205,
+      "FP": 91,
+      "TN": 409,
+      "FN": 295
+    },
+    "threshold": 0.949748743718593,
+    "note": "Baseline final on test split"
+  },
+  {
+    "run_id": "run_04",
+    "timestamp": "2026-03-25T20:34:45.482778+00:00",
+    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "config": {
+      "pairs": "outputs/pairs_val_capped.npz",
+      "similarity": "cosine",
+      "mode": "sweep",
+      "score_direction": "higher_is_same"
+    },
+    "metrics": {
+      "auc": 0.6069,
+      "suggested_threshold": 0.9598,
+      "threshold_rule_used": "balanced_acc"
+    },
+    "threshold": 0.9597989949748744,
+    "note": "Identity-capped threshold sweep on val"
+  },
+  {
+    "run_id": "run_05",
+    "timestamp": "2026-03-25T20:35:31.192253+00:00",
+    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "config": {
+      "pairs": "outputs/pairs_test_capped.npz",
+      "similarity": "cosine",
+      "mode": "final",
+      "score_direction": "higher_is_same"
+    },
+    "metrics": {
+      "balanced_acc": 0.588,
+      "f1": 0.3681,
+      "eer": 0.372,
+      "TP": 120,
+      "FP": 32,
+      "TN": 468,
+      "FN": 380
+    },
+    "threshold": 0.9597989949748744,
+    "note": "Identity-capped final on test split"
+  }
+]
