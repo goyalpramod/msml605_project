@@ -1,0 +1,15 @@
+{
+  "seed": 42,
+  "threshold_range": [0.0, 1.0],
+  "threshold_steps": 200,
+  "threshold_rule": "balanced_acc",
+  "score_direction": {
+    "cosine": "higher_is_same",
+    "euclidean": "lower_is_same"
+  },
+  "split_roles": {
+    "val": "threshold_selection",
+    "test": "final_reporting"
+  },
+  "pair_policy": "baseline_v1"
+}
