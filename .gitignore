@@ -213,3 +213,6 @@ data/lfw_home
 
 #outputs
 outputs/
+!outputs/runs_log.json
+!outputs/roc_*.png
+!outputs/cm_*.png
