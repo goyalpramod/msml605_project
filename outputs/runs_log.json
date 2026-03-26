@@ -1,8 +1,8 @@
 [
   {
     "run_id": "run_01",
-    "timestamp": "2026-03-25T20:33:28.973807+00:00",
-    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "timestamp": "2026-03-26T18:37:39.014544+00:00",
+    "commit": "bc8c26254ae08b839c0b91774c617fcda4bf49ab",
     "config": {
       "pairs": "outputs/pairs_val.npz",
       "similarity": "cosine",
@@ -19,8 +19,8 @@
   },
   {
     "run_id": "run_02",
-    "timestamp": "2026-03-25T20:33:34.350499+00:00",
-    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "timestamp": "2026-03-26T18:37:43.817528+00:00",
+    "commit": "bc8c26254ae08b839c0b91774c617fcda4bf49ab",
     "config": {
       "pairs": "outputs/pairs_val.npz",
       "similarity": "cosine",
@@ -42,8 +42,8 @@
   },
   {
     "run_id": "run_03",
-    "timestamp": "2026-03-25T20:34:39.556818+00:00",
-    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "timestamp": "2026-03-26T18:38:47.120729+00:00",
+    "commit": "bc8c26254ae08b839c0b91774c617fcda4bf49ab",
     "config": {
       "pairs": "outputs/pairs_test.npz",
       "similarity": "cosine",
@@ -64,8 +64,8 @@
   },
   {
     "run_id": "run_04",
-    "timestamp": "2026-03-25T20:34:45.482778+00:00",
-    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "timestamp": "2026-03-26T18:38:51.702078+00:00",
+    "commit": "bc8c26254ae08b839c0b91774c617fcda4bf49ab",
     "config": {
       "pairs": "outputs/pairs_val_capped.npz",
       "similarity": "cosine",
@@ -82,8 +82,8 @@
   },
   {
     "run_id": "run_05",
-    "timestamp": "2026-03-25T20:35:31.192253+00:00",
-    "commit": "846dea34657964238742fb9792ecc954758612d4",
+    "timestamp": "2026-03-26T18:39:12.676334+00:00",
+    "commit": "bc8c26254ae08b839c0b91774c617fcda4bf49ab",
     "config": {
       "pairs": "outputs/pairs_test_capped.npz",
       "similarity": "cosine",
