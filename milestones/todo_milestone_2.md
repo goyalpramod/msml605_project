@@ -241,12 +241,12 @@ Both add dependencies as needed. New expected additions:
 ## Definition of Done (Milestone 2)
 
 **Pramod**
-- [ ] `src/metrics.py` with ROC, confusion matrix, balanced accuracy, F1, EER, threshold selector
-- [ ] `src/tracker.py` with JSON run logging (auto git hash, timestamp)
-- [ ] `src/validation.py` with fail-fast checks (schema, labels, lengths, leakage)
-- [ ] `scripts/evaluate.py` with `--mode sweep/select/final` and run logging
-- [ ] `configs/eval_config.json` with threshold range, split roles, score direction
-- [ ] Unit tests in `tests/test_metrics.py`, `tests/test_validation.py`, `tests/test_tracker.py`
+- [x] `src/metrics.py` with ROC, confusion matrix, balanced accuracy, F1, EER, threshold selector
+- [x] `src/tracker.py` with JSON run logging (auto git hash, timestamp)
+- [x] `src/validation.py` with fail-fast checks (schema, labels, lengths, leakage)
+- [x] `scripts/evaluate.py` with `--mode sweep/select/final` and run logging
+- [x] `configs/eval_config.json` with threshold range, split roles, score direction
+- [x] Unit tests in `tests/test_metrics.py`, `tests/test_validation.py`, `tests/test_tracker.py`
 - [ ] Report sections 1–3 complete
 - [ ] Clean-clone test passes; `v0.2` tagged
 
@@ -255,13 +255,13 @@ Both add dependencies as needed. New expected additions:
 - [x] `src/plotting.py` with ROC, confusion matrix, and score distribution plot functions
 - [x] `scripts/error_analysis.py` with 2 defined slices + representative examples
 - [x] `tests/test_generate_pairs.py` with determinism, cap, balance ratio, leakage, and schema checks (13 tests)
-- [ ] `tests/test_integration.py` using synthetic fixtures (< 5 seconds, no downloads) — blocked on Pramod's evaluate.py
+- [x] `tests/test_integration.py` using synthetic fixtures (< 5 seconds, no downloads) — blocked on Pramod's evaluate.py
 - [x] README updated with M2 summary + How-to-run for all new scripts + artifact locations
 - [ ] Report sections 4–5 + closing complete — blocked on real scored data from evaluate.py
 
 **Shared outputs (grader checks)**
-- [ ] `outputs/runs_log.json` with ≥ 5 tracked runs
-- [ ] ROC-style plot saved (e.g., `outputs/roc_run_01.png`)
-- [ ] Confusion matrix plot committed or in report
+- [x] `outputs/runs_log.json` with ≥ 5 tracked runs
+- [x] ROC-style plot saved (e.g., `outputs/roc_run_01.png`)
+- [x] Confusion matrix plot committed or in report
 - [ ] `reports/milestone2_report.pdf` (~2 pages, all sections complete)
 - [ ] Tagged `v0.2` pointing to the reproducible commit
