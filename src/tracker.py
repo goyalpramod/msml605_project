@@ -62,6 +62,8 @@ def log_run(
     else:
         runs = []
 
+    # Replace existing entry with same run_id (idempotent re-runs)
+    runs = [r for r in runs if r.get("run_id") != run_id]
     runs.append(entry)
 
     with open(log_path, "w") as f:
