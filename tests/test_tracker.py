@@ -62,7 +62,16 @@ class TestLogRun:
         log_run("run_01", SAMPLE_CONFIG, SAMPLE_METRICS, 0.55, "test", log_path)
         assert os.path.exists(log_path)
 
+    def test_same_run_id_replaces_not_duplicates(self, tmp_path):
+        log_path = str(tmp_path / "runs_log.json")
+        log_run("run_01", SAMPLE_CONFIG, SAMPLE_METRICS, 0.55, "first", log_path)
+        log_run("run_01", SAMPLE_CONFIG, SAMPLE_METRICS, 0.60, "replaced", log_path)
+        runs = json.load(open(log_path))
+        assert len(runs) == 1
+        assert runs[0]["threshold"] == pytest.approx(0.60)
+        assert runs[0]["note"] == "replaced"
 
+        
 class TestLoadRuns:
     def test_returns_empty_list_if_no_file(self, tmp_path):
         log_path = str(tmp_path / "missing.json")
