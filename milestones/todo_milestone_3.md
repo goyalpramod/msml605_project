@@ -243,19 +243,19 @@ Both add dependencies as needed. Expected new additions:
 ## Definition of Done (Milestone 3)
 
 **Pramod**
-- [ ] `src/embedder.py` with deterministic preprocessing + FaceNet embedding extraction
-- [ ] `src/confidence.py` with documented formula, output range, and interpretation
-- [ ] `src/inference.py` implementing the `verify_pair()` interface contract with stage-level timing
-- [ ] Threshold re-selected on embedding scores (runs `run_06`, `run_07` in `runs_log.json`)
-- [ ] `configs/inference_config.json` fully populated (model, dim, threshold, confidence formula)
-- [ ] Unit tests in `tests/test_embedder.py` and `tests/test_confidence.py`
+- [x] `src/embedder.py` with deterministic preprocessing + FaceNet embedding extraction
+- [x] `src/confidence.py` with documented formula, output range, and interpretation
+- [x] `src/inference.py` implementing the `verify_pair()` interface contract with stage-level timing
+- [x] Threshold re-selected on embedding scores (runs `run_06`, `run_07` in `runs_log.json`)
+- [x] `configs/inference_config.json` fully populated (model, dim, threshold, confidence formula)
+- [x] Unit tests in `tests/test_embedder.py` and `tests/test_confidence.py`
 - [ ] Report sections 1–3 complete
 
 **Arun**
 - [ ] `scripts/verify.py` CLI with required output fields (score, threshold, decision, confidence, latency)
 - [ ] `Dockerfile` buildable from clean clone, CLI runnable inside container
 - [ ] `scripts/load_test.py` with configurable workers, per-request latency, JSON summary output
-- [ ] `configs/inference_config.json` scaffolded (Pramod fills threshold/formula)
+- [x] `configs/inference_config.json` scaffolded — Pramod has filled threshold (0.3970) and confidence formula
 - [ ] `tests/test_inference_smoke.py` with smoke + integration tests (< 10 seconds, no downloads)
 - [ ] README updated with M3 section + full How-to-run
 - [ ] Report sections 4–5 complete
@@ -264,6 +264,6 @@ Both add dependencies as needed. Expected new additions:
 - [ ] `docker build -t face-verifier . && docker run ...` works from clean clone
 - [ ] CLI prints: score, threshold, decision, confidence, latency for a pair
 - [ ] `outputs/load_test_results.json` with throughput + p95 latency
-- [ ] `outputs/runs_log.json` has ≥ 7 entries (5 from M2 + run_06 + run_07)
+- [x] `outputs/runs_log.json` has ≥ 7 entries (5 from M2 + run_06 + run_07)
 - [ ] `reports/milestone3_report.pdf` complete
 - [ ] Tagged `v0.3` pointing to the reproducible commit
