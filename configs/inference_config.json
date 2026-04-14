@@ -1,0 +1,14 @@
+{
+  "embedding_model": "facenet",
+  "embedding_dim": 512,
+  "threshold": 0.3969849246231156,
+  "score_direction": "higher_is_same",
+  "confidence_formula": "sigmoid(10 * (score - threshold)) = 1 / (1 + exp(-10 * (score - threshold)))",
+  "confidence_output_range": "(0, 1)",
+  "model_rationale": "InceptionResnetV1 pretrained on VGGFace2 via facenet-pytorch. Chosen for strong open-source support, L2-normalized 512-dim embeddings, and proven LFW benchmark performance (~99.6% accuracy). Preferred over: ArcFace/InsightFace (heavier inference stack, harder to install), Dlib (lower accuracy on unconstrained images), MobileFaceNet (speed-accuracy tradeoff not needed for offline evaluation).",
+  "load_test": {
+    "num_pairs": 100,
+    "num_workers": 4,
+    "seed": 42
+  }
+}
