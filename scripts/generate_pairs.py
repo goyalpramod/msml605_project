@@ -161,6 +161,17 @@ def generate_pairs(
     val_fraction: float | None = None,
     cap_per_identity: int | None = None,
 ) -> None:
+    """Generate LFW verification pair files.
+
+    Always produces:
+      - pairs_train.npz  (full devTrain, or subset if val_fraction splits off validation)
+      - pairs_test.npz   (full devTest, unconditional)
+      - pairs_meta.json
+
+    With val_fraction: also produces pairs_val.npz
+    With cap_per_identity: also produces pairs_test_capped.npz
+        (and pairs_val_capped.npz if val split exists)
+    """
     manifest = _load_manifest(manifest_path)
     split_policy = manifest.get("split_policy")
     if split_policy != "dev_train_test":
@@ -232,7 +243,7 @@ def generate_pairs(
     test_img2 = test_pairs.pairs[:, 1, :, :].astype(np.float32, copy=False)
     test_label = test_pairs.target.astype(np.int64, copy=False)
 
-    # --- Baseline train/test (always saved) ---
+    # --- Train (and optionally val) pairs ---
     if val_fraction is not None:
         # Split train into train + val at the identity level
         train_indices, val_indices = _split_identities_for_val(
@@ -255,6 +266,7 @@ def generate_pairs(
     else:
         _save_pairs("train", train_img1, train_img2, train_label, out_dir)
 
+    # --- Test pairs (always saved, independent of val_fraction / cap flags) ---
     _save_pairs("test", test_img1, test_img2, test_label, out_dir)
 
     # --- Capped versions (if requested) ---

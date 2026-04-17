@@ -62,9 +62,12 @@ data/                          # generated, gitignored
 ### `scripts/generate_pairs.py`
 - Depends on ingestion output manifest (`--manifest ./outputs/manifest.json`).
 - Does not auto-download (`download_if_missing=False`); ingestion must run first.
-- Writes:
-  - `outputs/pairs_train.npz`
-  - `outputs/pairs_test.npz`
+- Always writes:
+  - `outputs/pairs_train.npz` (full train set, or reduced if `--val-fraction` is used)
+  - `outputs/pairs_test.npz` (full test set, always unconditional)
+  - `outputs/pairs_meta.json`
+- With `--val-fraction`: also writes `outputs/pairs_val.npz`
+- With `--cap-per-identity`: also writes `outputs/pairs_test_capped.npz` (and `pairs_val_capped.npz` if val split exists)
 - Each `.npz` contains keys: `img1`, `img2`, `label`.
 
 ### `src/similarity.py`
@@ -226,7 +229,8 @@ uv pip install -r requirements.txt
 # 1. Ingest LFW data
 uv run python scripts/ingest_lfw.py --seed 42
 
-# 2. Generate all pairs (baseline + val split + identity-capped) in one call
+# 2. Generate pair files (always: pairs_train, pairs_test, pairs_meta;
+#    with --val-fraction: pairs_val; with --cap-per-identity: pairs_val_capped, pairs_test_capped)
 uv run python scripts/generate_pairs.py --seed 42 --val-fraction 0.15 --cap-per-identity 10
 
 # 3. Baseline evaluation — threshold sweep on val split (run_01)
@@ -283,7 +287,8 @@ pip install -r requirements.txt
 # 1. Ingest LFW data
 python scripts/ingest_lfw.py --seed 42
 
-# 2. Generate all pairs (baseline + val split + identity-capped) in one call
+# 2. Generate pair files (always: pairs_train, pairs_test, pairs_meta;
+#    with --val-fraction: pairs_val; with --cap-per-identity: pairs_val_capped, pairs_test_capped)
 python scripts/generate_pairs.py --seed 42 --val-fraction 0.15 --cap-per-identity 10
 
 # 3. Baseline evaluation — threshold sweep on val split (run_01)
@@ -332,6 +337,12 @@ After running the full pipeline, the following files are generated in `outputs/`
 
 | File | Description |
 |------|-------------|
+| `pairs_train.npz` | Train verification pairs (always generated) |
+| `pairs_test.npz` | Test verification pairs (always generated) |
+| `pairs_val.npz` | Validation split pairs (with `--val-fraction`) |
+| `pairs_val_capped.npz` | Identity-capped validation pairs (with `--cap-per-identity`) |
+| `pairs_test_capped.npz` | Identity-capped test pairs (with `--cap-per-identity`) |
+| `pairs_meta.json` | Pair generation metadata (seed, val_fraction, cap) |
 | `runs_log.json` | 5 tracked evaluation runs with metrics, thresholds, and git hashes |
 | `roc_run_01.png` | ROC curve for baseline val sweep |
 | `cm_run_02.png` | Confusion matrix at selected baseline threshold |
