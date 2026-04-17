@@ -104,8 +104,8 @@
   },
   {
     "run_id": "run_06",
-    "timestamp": "2026-04-14T17:23:34.799287+00:00",
-    "commit": "b004f4c04159489421d91685962dd93288c31054",
+    "timestamp": "2026-04-17T03:44:16.462180+00:00",
+    "commit": "325102d3c33ccee05c9c9916553da7f2d51ba288",
     "config": {
       "pairs": "outputs/pairs_val.npz",
       "similarity": "cosine",
@@ -120,12 +120,12 @@
       "threshold_rule_used": "balanced_acc"
     },
     "threshold": 0.39698492462311563,
-    "note": "Embedding-based threshold sweep on val split (FaceNet VGGFace2)"
+    "note": "FaceNet embedding threshold sweep on val split"
   },
   {
     "run_id": "run_07",
-    "timestamp": "2026-04-14T17:24:05.694129+00:00",
-    "commit": "b004f4c04159489421d91685962dd93288c31054",
+    "timestamp": "2026-04-17T03:45:32.691250+00:00",
+    "commit": "325102d3c33ccee05c9c9916553da7f2d51ba288",
     "config": {
       "pairs": "outputs/pairs_test.npz",
       "similarity": "cosine",
@@ -143,7 +143,7 @@
       "TN": 491,
       "FN": 11
     },
-    "threshold": 0.3969849246231156,
-    "note": "Embedding-based final evaluation on test split at FaceNet threshold"
+    "threshold": 0.39698492462311563,
+    "note": "FaceNet embedding final evaluation on test split"
   }
 ]

@@ -398,56 +398,86 @@ Re-ran the M2 threshold-selection discipline on FaceNet embedding scores — sam
 
 The new embedding-based threshold `0.397` far outperforms the M2 pixel-based threshold (`0.95`, balanced acc 0.61) — see `reports/milestone3_report.pdf`.
 
-### How to run Milestone 3
+### How to reproduce Milestone 3 results
+
+Assumes the Milestone 2 pipeline has been run first (so `outputs/pairs_val.npz` and `outputs/pairs_test.npz` exist). Steps 1–2 re-run FaceNet threshold selection and regenerate `outputs/roc_run_06.png` + `outputs/cm_run_07.png`. Steps 3–5 exercise the CLI, Docker, and load-test artifacts.
+
+**Runtime note:** Embedding all val pairs (~457) takes ~2–4 minutes on CPU; test pairs (~1000) take ~5–10 minutes. The FaceNet model is downloaded once on first use (~90 MB) and cached.
 
 #### Option A: Using `uv` (recommended)
 
 ```bash
-# 0. Setup (skip if already done)
+# 0. Setup (skip if already done for M2)
 uv venv .venv
 uv pip install -r requirements.txt
 
-# 1. CLI inference on a single pair (local)
+# 1. Embedding threshold sweep on val split (run_06 — produces outputs/roc_run_06.png)
+uv run python scripts/embed_eval.py \
+  --pairs outputs/pairs_val.npz --mode sweep \
+  --run-id run_06 --note "FaceNet embedding threshold sweep on val split"
+
+# 2. Extract the selected threshold from run_06
+THRESH_EMB=$(uv run python -c "import json; runs=json.load(open('outputs/runs_log.json')); print([r for r in runs if r['run_id']=='run_06'][0]['threshold'])")
+
+# 3. Embedding final evaluation on test split (run_07 — produces outputs/cm_run_07.png)
+uv run python scripts/embed_eval.py \
+  --pairs outputs/pairs_test.npz --mode final --threshold $THRESH_EMB \
+  --run-id run_07 --note "FaceNet embedding final evaluation on test split"
+
+# 4. CLI inference on a single pair (local)
 uv run python scripts/verify.py \
   --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
   --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
 
-# 2. Concurrent load test (100 pairs, 4 workers, seed=42)
+# 5. Concurrent load test (100 pairs, 4 workers, seed=42)
 uv run python scripts/load_test.py \
   --num-pairs 100 --workers 4 --seed 42 \
   --pairs outputs/pairs_test.npz \
   --output outputs/load_test_results.json
 
-# 3. Smoke + integration tests
+# 6. Smoke + integration tests
 uv run python -m pytest tests/test_inference_smoke.py -v
 
-# 4. Full test suite
+# 7. Full test suite
 uv run python -m pytest tests/ -v
 ```
 
 #### Option B: Classic `venv` + `pip`
 
 ```bash
-# 0. Setup (skip if already done)
+# 0. Setup (skip if already done for M2)
 python -m venv .venv
 source .venv/bin/activate   # or .\.venv\Scripts\Activate.ps1 on Windows
 pip install -r requirements.txt
 
-# 1. CLI inference on a single pair (local)
+# 1. Embedding threshold sweep on val split (run_06)
+python scripts/embed_eval.py \
+  --pairs outputs/pairs_val.npz --mode sweep \
+  --run-id run_06 --note "FaceNet embedding threshold sweep on val split"
+
+# 2. Extract the selected threshold from run_06
+THRESH_EMB=$(python -c "import json; runs=json.load(open('outputs/runs_log.json')); print([r for r in runs if r['run_id']=='run_06'][0]['threshold'])")
+
+# 3. Embedding final evaluation on test split (run_07)
+python scripts/embed_eval.py \
+  --pairs outputs/pairs_test.npz --mode final --threshold $THRESH_EMB \
+  --run-id run_07 --note "FaceNet embedding final evaluation on test split"
+
+# 4. CLI inference on a single pair (local)
 python scripts/verify.py \
   --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
   --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
 
-# 2. Concurrent load test
+# 5. Concurrent load test
 python scripts/load_test.py \
   --num-pairs 100 --workers 4 --seed 42 \
   --pairs outputs/pairs_test.npz \
   --output outputs/load_test_results.json
 
-# 3. Smoke + integration tests
+# 6. Smoke + integration tests
 python -m pytest tests/test_inference_smoke.py -v
 
-# 4. Full test suite
+# 7. Full test suite
 python -m pytest tests/ -v
 ```
 
@@ -487,8 +517,13 @@ data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg,data/lfw_home/lf
 | File | Description |
 |------|-------------|
 | `configs/inference_config.json` | FaceNet threshold, confidence formula, load-test defaults |
-| `outputs/load_test_results.json` | Throughput + p50/p95 latency from concurrent workload |
 | `outputs/runs_log.json` | Now contains 7 runs (adds `run_06` embedding sweep, `run_07` embedding final) |
+| `outputs/roc_run_06.png` | ROC curve for FaceNet embedding sweep on val split |
+| `outputs/cm_run_07.png` | Confusion matrix for FaceNet embedding final on test split |
+| `outputs/score_dist_run_07.png` | Score distribution at the selected FaceNet threshold (test split) |
+| `outputs/scores_emb_val.npz` | Cached embedding cosine scores for val pairs |
+| `outputs/scores_emb_test.npz` | Cached embedding cosine scores for test pairs |
+| `outputs/load_test_results.json` | Throughput + p50/p95 latency from concurrent workload |
 
 ### Report
 

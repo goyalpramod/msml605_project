@@ -210,7 +210,8 @@ __marimo__/
 data/lfw_home
 
 #outputs
-outputs/
+outputs/*
+!outputs/.gitkeep
 !outputs/runs_log.json
 !outputs/roc_*.png
 !outputs/cm_*.png
