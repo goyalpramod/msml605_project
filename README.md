@@ -364,9 +364,140 @@ After running the full pipeline, the following files are generated in `outputs/`
 
 Full evaluation report: `reports/milestone2_report.pdf`
 
+## Milestone 3
+
+Milestone 3 upgrades the verifier from pixel-level similarity to **FaceNet (InceptionResnetV1, pretrained on VGGFace2)** embeddings, exposes it through a CLI, packages it in Docker, and measures runtime behavior under concurrency.
+
+### What M3 adds
+- **Embedding upgrade**: `src/embedder.py` extracts 512-dim L2-normalized FaceNet embeddings; similarity is cosine between these embeddings instead of raw pixels.
+- **Calibrated confidence**: `src/confidence.py` produces a sigmoid confidence in `(0, 1)` from the score/threshold gap.
+- **Single-pair inference entry point**: `src/inference.py` wires embed → score → confidence and measures stage-level latency.
+- **CLI**: `scripts/verify.py` for single pairs or CSV batches.
+- **Docker**: reproducible CPU-only build with FaceNet weights baked in at build time.
+- **Load test**: `scripts/load_test.py` runs concurrent inference and reports throughput + p50/p95 latency.
+
+### Embedding model choice
+`InceptionResnetV1` pretrained on VGGFace2 via `facenet-pytorch`. Chosen for strong open-source support, L2-normalized 512-dim embeddings, and proven LFW benchmark performance. Full rationale in `reports/milestone3_report.pdf`.
+
+### Confidence formula
+```
+confidence = sigmoid(10 * (score - threshold)) ∈ (0, 1)
+```
+- `0.5` at the threshold (maximum uncertainty),
+- saturates monotonically toward `1.0` above and `0.0` below,
+- deterministic, no learned parameters.
+
+### Threshold re-selection
+
+Re-ran the M2 threshold-selection discipline on FaceNet embedding scores — same balanced-accuracy rule, same val/test roles.
+
+| Run ID | Mode | Split | Threshold | Key Metric | Note |
+|--------|------|-------|-----------|------------|------|
+| run_06 | sweep | val (embedding) | 0.3970 | AUC = 0.9969 | FaceNet embedding threshold sweep on val split |
+| run_07 | final | test (embedding) | 0.3970 | Balanced acc = 0.98, F1 = 0.98, EER = 0.024 | FaceNet embedding final evaluation on test |
+
+The new embedding-based threshold `0.397` far outperforms the M2 pixel-based threshold (`0.95`, balanced acc 0.61) — see `reports/milestone3_report.pdf`.
+
+### How to run Milestone 3
+
+#### Option A: Using `uv` (recommended)
+
+```bash
+# 0. Setup (skip if already done)
+uv venv .venv
+uv pip install -r requirements.txt
+
+# 1. CLI inference on a single pair (local)
+uv run python scripts/verify.py \
+  --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
+  --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+
+# 2. Concurrent load test (100 pairs, 4 workers, seed=42)
+uv run python scripts/load_test.py \
+  --num-pairs 100 --workers 4 --seed 42 \
+  --pairs outputs/pairs_test.npz \
+  --output outputs/load_test_results.json
+
+# 3. Smoke + integration tests
+uv run python -m pytest tests/test_inference_smoke.py -v
+
+# 4. Full test suite
+uv run python -m pytest tests/ -v
+```
+
+#### Option B: Classic `venv` + `pip`
+
+```bash
+# 0. Setup (skip if already done)
+python -m venv .venv
+source .venv/bin/activate   # or .\.venv\Scripts\Activate.ps1 on Windows
+pip install -r requirements.txt
+
+# 1. CLI inference on a single pair (local)
+python scripts/verify.py \
+  --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
+  --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+
+# 2. Concurrent load test
+python scripts/load_test.py \
+  --num-pairs 100 --workers 4 --seed 42 \
+  --pairs outputs/pairs_test.npz \
+  --output outputs/load_test_results.json
+
+# 3. Smoke + integration tests
+python -m pytest tests/test_inference_smoke.py -v
+
+# 4. Full test suite
+python -m pytest tests/ -v
+```
+
+#### Docker (grader-facing path)
+
+```bash
+# Build reproducible image (FaceNet weights baked in at build time)
+docker build -t face-verifier .
+
+# Run CLI inference inside the container (mount local data directory)
+docker run --rm -v $(pwd)/data:/app/data face-verifier \
+  python scripts/verify.py \
+    --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
+    --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+```
+
+Docker Desktop with the WSL2 backend is the target environment. Run Docker commands from a WSL shell so `$(pwd)` expands to a Linux-style path. If running from Git Bash on Windows, prefix with `MSYS_NO_PATHCONV=1` to stop MSYS from mangling the mount path:
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)/data:/app/data" face-verifier \
+  python scripts/verify.py \
+    --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
+    --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+```
+
+### Batch CSV format for `scripts/verify.py --batch`
+
+CSV must have a header row `img1,img2`. Example:
+```
+img1,img2
+data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg,data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg,data/lfw_home/lfw_funneled/Adam_Sandler/Adam_Sandler_0001.jpg
+```
+
+### M3 output artifacts
+
+| File | Description |
+|------|-------------|
+| `configs/inference_config.json` | FaceNet threshold, confidence formula, load-test defaults |
+| `outputs/load_test_results.json` | Throughput + p50/p95 latency from concurrent workload |
+| `outputs/runs_log.json` | Now contains 7 runs (adds `run_06` embedding sweep, `run_07` embedding final) |
+
+### Report
+
+Full Milestone 3 report: `reports/milestone3_report.pdf`.
+
 ## Releases
 - `v0.1` — Milestone 1: reproducible LFW pipeline (ingestion, pair generation, similarity benchmarks)
 - `v0.2` — Milestone 2: evaluation loop, tracked runs, data-centric improvement, error analysis
+- `v0.3` — Milestone 3: FaceNet embeddings, CLI, Docker, concurrent load test
 
 ## Reproducibility Notes
 - Default workflow uses fixed seed `42`.
