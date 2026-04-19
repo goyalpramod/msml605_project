@@ -8,7 +8,7 @@ Upgrade the face verifier from the pixel-level baseline to an embedding-based re
 
 Key terms for this milestone:
 - **Embedding**: fixed-length face vector produced by FaceNet; similarity is now computed from these, not raw pixels
-- **Calibrated confidence**: a documented value derived from score + threshold (formula TBD — must be explained in README and report)
+- **Calibrated confidence**: a documented value derived from score + threshold (formula TBD — must be explained in README)
 - **Load test**: script that runs inference under multiple workers and reports throughput + p95 latency (CPU-only, feasible local workload)
 - **Smoke test**: tiny end-to-end check that the main CLI path completes without error
 
@@ -82,7 +82,7 @@ def compute_confidence(score: float, threshold: float) -> float:
     Compute calibrated confidence. Formula TBD — must be:
     - Reproducible and deterministic
     - Output range clearly stated (e.g. [0, 1])
-    - Documented in README and report
+    - Documented in README
     """
 ```
 - Options: sigmoid of normalized distance, linear clamp, isotonic regression — pick one and document it
@@ -113,12 +113,6 @@ Once embeddings are working, re-run the M2 threshold-selection discipline:
   - Test confidence output range
   - Test boundary conditions: score exactly at threshold, far above, far below
   - Test monotonicity (higher score → higher confidence for cosine)
-
-### 6. Report Sections (Pramod writes)
-In `reports/milestone3_report.pdf`:
-- **Section 1**: Embedding model choice — why FaceNet over other options (ArcFace/InsightFace, Dlib, MobileFaceNet); discuss tradeoffs of each, justify final choice
-- **Section 2**: Confidence formula — what it means, output range, why this formula was chosen
-- **Section 3**: Threshold re-selection on embedding scores — ROC plot, new threshold value vs old pixel-based threshold, metrics comparison
 
 ---
 
@@ -218,11 +212,6 @@ Add a **Milestone 3** section. Must include:
   ```
 - Artifact locations: `outputs/load_test_results.json`, `outputs/runs_log.json`, `configs/inference_config.json`
 
-### 7. Report Sections (Arun writes)
-In `reports/milestone3_report.pdf`:
-- **Section 4**: Load test results — methodology, throughput, p50/p95 latency table, failure count, discussion of bottlenecks
-- **Section 5**: Docker packaging notes — what was hard, any tradeoffs made (e.g. model weight download at build vs runtime)
-
 ---
 
 ## Shared
@@ -249,7 +238,6 @@ Both add dependencies as needed. Expected new additions:
 - [x] Threshold re-selected on embedding scores (runs `run_06`, `run_07` in `runs_log.json`)
 - [x] `configs/inference_config.json` fully populated (model, dim, threshold, confidence formula)
 - [x] Unit tests in `tests/test_embedder.py` and `tests/test_confidence.py`
-- [ ] Report sections 1–3 complete
 
 **Arun**
 - [ ] `scripts/verify.py` CLI with required output fields (score, threshold, decision, confidence, latency)
@@ -258,12 +246,10 @@ Both add dependencies as needed. Expected new additions:
 - [x] `configs/inference_config.json` scaffolded — Pramod has filled threshold (0.3970) and confidence formula
 - [ ] `tests/test_inference_smoke.py` with smoke + integration tests (< 10 seconds, no downloads)
 - [ ] README updated with M3 section + full How-to-run
-- [ ] Report sections 4–5 complete
 
 **Shared outputs (grader checks)**
 - [ ] `docker build -t face-verifier . && docker run ...` works from clean clone
 - [ ] CLI prints: score, threshold, decision, confidence, latency for a pair
 - [ ] `outputs/load_test_results.json` with throughput + p95 latency
 - [x] `outputs/runs_log.json` has ≥ 7 entries (5 from M2 + run_06 + run_07)
-- [ ] `reports/milestone3_report.pdf` complete
 - [ ] Tagged `v0.3` pointing to the reproducible commit

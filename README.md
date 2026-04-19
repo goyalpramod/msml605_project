@@ -377,7 +377,7 @@ Milestone 3 upgrades the verifier from pixel-level similarity to **FaceNet (Ince
 - **Load test**: `scripts/load_test.py` runs concurrent inference and reports throughput + p50/p95 latency.
 
 ### Embedding model choice
-`InceptionResnetV1` pretrained on VGGFace2 via `facenet-pytorch`. Chosen for strong open-source support, L2-normalized 512-dim embeddings, and proven LFW benchmark performance. Full rationale in `reports/milestone3_report.pdf`.
+`InceptionResnetV1` pretrained on VGGFace2 via `facenet-pytorch`. Chosen for strong open-source support, L2-normalized 512-dim embeddings, and proven LFW benchmark performance.
 
 ### Confidence formula
 ```
@@ -396,7 +396,7 @@ Re-ran the M2 threshold-selection discipline on FaceNet embedding scores — sam
 | run_06 | sweep | val (embedding) | 0.3970 | AUC = 0.9969 | FaceNet embedding threshold sweep on val split |
 | run_07 | final | test (embedding) | 0.3970 | Balanced acc = 0.98, F1 = 0.98, EER = 0.024 | FaceNet embedding final evaluation on test |
 
-The new embedding-based threshold `0.397` far outperforms the M2 pixel-based threshold (`0.95`, balanced acc 0.61) — see `reports/milestone3_report.pdf`.
+The new embedding-based threshold `0.397` far outperforms the M2 pixel-based threshold (`0.95`, balanced acc 0.61).
 
 ### How to reproduce Milestone 3 results
 
@@ -524,10 +524,6 @@ data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg,data/lfw_home/lf
 | `outputs/scores_emb_val.npz` | Cached embedding cosine scores for val pairs |
 | `outputs/scores_emb_test.npz` | Cached embedding cosine scores for test pairs |
 | `outputs/load_test_results.json` | Throughput + p50/p95 latency from concurrent workload |
-
-### Report
-
-Full Milestone 3 report: `reports/milestone3_report.pdf`.
 
 ## Releases
 - `v0.1` — Milestone 1: reproducible LFW pipeline (ingestion, pair generation, similarity benchmarks)
