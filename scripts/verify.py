@@ -58,7 +58,9 @@ def load_image(path: str) -> np.ndarray:
 
 def print_result(img1_path: str, img2_path: str, result: dict) -> None:
     decision = "SAME" if result["decision"] else "DIFFERENT"
-    print(f"Pair:        {os.path.basename(img1_path)} vs {os.path.basename(img2_path)}")
+    print(
+        f"Pair:        {os.path.basename(img1_path)} vs {os.path.basename(img2_path)}"
+    )
     print(f"Score:       {result['score']:.3f}")
     print(f"Threshold:   {result['threshold']:.3f}")
     print(f"Decision:    {decision}")
@@ -80,7 +82,11 @@ def run_batch(csv_path: str, threshold: float) -> None:
 
     with open(csv_path, newline="") as f:
         reader = csv.DictReader(f)
-        if reader.fieldnames is None or "img1" not in reader.fieldnames or "img2" not in reader.fieldnames:
+        if (
+            reader.fieldnames is None
+            or "img1" not in reader.fieldnames
+            or "img2" not in reader.fieldnames
+        ):
             raise ValueError(
                 f"Batch CSV must have header 'img1,img2'. Got: {reader.fieldnames}"
             )
@@ -120,10 +126,15 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.batch and (args.img1 or args.img2):
-        print("Error: --batch is mutually exclusive with --img1/--img2.", file=sys.stderr)
+        print(
+            "Error: --batch is mutually exclusive with --img1/--img2.", file=sys.stderr
+        )
         return 1
     if not args.batch and not (args.img1 and args.img2):
-        print("Error: provide either --batch CSV or both --img1 and --img2.", file=sys.stderr)
+        print(
+            "Error: provide either --batch CSV or both --img1 and --img2.",
+            file=sys.stderr,
+        )
         return 1
 
     try:

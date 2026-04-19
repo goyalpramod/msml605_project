@@ -186,7 +186,9 @@ def main() -> int:
         print(f"Error sampling pairs: {e}", file=sys.stderr)
         return 1
 
-    print(f"Running load test: {args.num_pairs} pairs, {args.workers} workers, seed={args.seed}")
+    print(
+        f"Running load test: {args.num_pairs} pairs, {args.workers} workers, seed={args.seed}"
+    )
     summary = run_load_test(img1, img2, threshold, args.workers)
     print_summary(summary)
 

@@ -71,7 +71,7 @@ class TestLogRun:
         assert runs[0]["threshold"] == pytest.approx(0.60)
         assert runs[0]["note"] == "replaced"
 
-        
+
 class TestLoadRuns:
     def test_returns_empty_list_if_no_file(self, tmp_path):
         log_path = str(tmp_path / "missing.json")

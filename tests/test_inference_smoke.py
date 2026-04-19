@@ -8,7 +8,6 @@ real FaceNet model; it relies on facenet-pytorch's cached weights and
 completes in a few seconds on warm runs.
 """
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -56,7 +55,14 @@ class TestVerifyPairIntegration:
         img1, img2 = rgb_image_pair
         result = verify_pair(img1, img2, threshold=0.5)
 
-        required = {"score", "threshold", "decision", "confidence", "latency_ms", "breakdown"}
+        required = {
+            "score",
+            "threshold",
+            "decision",
+            "confidence",
+            "latency_ms",
+            "breakdown",
+        }
         assert required.issubset(result.keys())
 
         assert isinstance(result["score"], float)
@@ -76,7 +82,9 @@ class TestVerifyPairIntegration:
             assert isinstance(v, float)
             assert v >= 0.0
 
-    def test_confidence_in_open_unit_interval(self, rgb_image_pair, mock_inference_model):
+    def test_confidence_in_open_unit_interval(
+        self, rgb_image_pair, mock_inference_model
+    ):
         img1, img2 = rgb_image_pair
         result = verify_pair(img1, img2, threshold=0.5)
         assert 0.0 < result["confidence"] < 1.0
@@ -119,7 +127,9 @@ class TestVerifyCli:
             f"CLI exited with {result.returncode}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
         )
         for label in ("Score:", "Threshold:", "Decision:", "Confidence:", "Latency:"):
-            assert label in result.stdout, f"Missing '{label}' in CLI output:\n{result.stdout}"
+            assert label in result.stdout, (
+                f"Missing '{label}' in CLI output:\n{result.stdout}"
+            )
 
     def test_cli_bad_input_exits_nonzero(self, tmp_path):
         """Nonexistent image paths → non-zero exit + error on stderr. No model load."""
