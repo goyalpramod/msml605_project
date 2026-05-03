@@ -525,10 +525,109 @@ data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg,data/lfw_home/lf
 | `outputs/scores_emb_test.npz` | Cached embedding cosine scores for test pairs |
 | `outputs/load_test_results.json` | Throughput + p50/p95 latency from concurrent workload |
 
+## Milestone 4 / Final Release
+
+Milestone 4 freezes the Milestone 3 embedding-based system as the final release. No new modeling work — the focus is on responsible-ML documentation, CPU profiling, reproducibility, and a clean-clone release path.
+
+### Final pipeline summary
+Input image pair → FaceNet preprocessing (resize 160×160, normalize to `[-1, 1]`) → InceptionResnetV1 forward pass (VGGFace2 weights) → 512-dim L2-normalized embeddings → cosine similarity → threshold `0.397` → decision (SAME/DIFFERENT) plus calibrated sigmoid confidence in `(0, 1)`.
+
+### Final artifacts
+
+| Artifact | Path |
+|---|---|
+| Final config (single source of truth) | `configs/inference_config.json` |
+| Final system summary | `outputs/final_system_summary.json` |
+| Runs log (run_06 sweep, run_07 final) | `outputs/runs_log.json` |
+| CPU profiling summary (JSON) | `outputs/profiling/cpu_profile_summary.json` |
+| CPU profiling summary (sidecar table) | `outputs/profiling/cpu_profile_summary.md` |
+| Profiling report | `reports/milestone4_profiling_report.pdf` (source: `reports/milestone4_profiling_report.md`) |
+| System Card | `reports/milestone4_system_card.pdf` |
+| Reproducibility checklist | `reports/milestone4_reproducibility_checklist.md` |
+| Final tag | `v1.0-final` |
+
+### CPU baseline (from `outputs/profiling/cpu_profile_summary.json`)
+On a 32-logical-core AMD64 / Windows 11 / `torch 2.11.0+cpu` machine, the final verifier processes a single pair in **81.3 ms end-to-end** (preprocess 1.16 ms / embed 79.96 ms / score 0.21 ms) at **~12.3 pairs/s**. Stacked batching scales throughput to **~81 pairs/s at batch size 16**. Embedding accounts for >93% of latency at every tested batch size. See [`reports/milestone4_profiling_report.md`](reports/milestone4_profiling_report.md) for the full per-stage and batch-size table.
+
+### How to reproduce Milestone 4 results
+
+#### Option A — uv (recommended)
+
+```bash
+# 0. Setup (skip if already done for M2/M3)
+uv venv .venv
+uv pip install -r requirements.txt
+
+# 1. Local CLI inference on a sample pair
+uv run python scripts/verify.py \
+    --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
+    --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+
+# 2. Dockerized CLI inference
+docker build -t face-verifier .
+docker run --rm -v "$(pwd)/data:/app/data" face-verifier \
+    python scripts/verify.py \
+        --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
+        --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+
+# 3. CPU profiling (per-stage + batch-size sensitivity)
+uv run python scripts/profile_inference.py \
+    --device cpu \
+    --output outputs/profiling/cpu_profile_summary.json
+
+# 4. Tests
+uv run python -m pytest tests/ -v
+
+# 5. Release-alignment check
+uv run python scripts/validate_release_alignment.py
+```
+
+#### Option B — venv + pip
+
+```bash
+# 0. Setup (skip if already done for M2/M3)
+python -m venv .venv
+source .venv/bin/activate   # or .\.venv\Scripts\Activate.ps1 on Windows
+pip install -r requirements.txt
+
+# 1. Local CLI inference on a sample pair
+python scripts/verify.py \
+    --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
+    --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+
+# 2. Dockerized CLI inference (same as above)
+docker build -t face-verifier .
+docker run --rm -v "$(pwd)/data:/app/data" face-verifier \
+    python scripts/verify.py \
+        --img1 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg \
+        --img2 data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0002.jpg
+
+# 3. CPU profiling
+python scripts/profile_inference.py \
+    --device cpu \
+    --output outputs/profiling/cpu_profile_summary.json
+
+# 4. Tests
+python -m pytest tests/ -v
+
+# 5. Release-alignment check
+python scripts/validate_release_alignment.py
+```
+
+### Reproducibility checklist
+The grader-facing step-by-step guide is at [`reports/milestone4_reproducibility_checklist.md`](reports/milestone4_reproducibility_checklist.md).
+
+### Final tag
+```bash
+git fetch --tags
+git checkout v1.0-final
+```
+
 ## Releases
 - `v0.1` — Milestone 1: reproducible LFW pipeline (ingestion, pair generation, similarity benchmarks)
 - `v0.2` — Milestone 2: evaluation loop, tracked runs, data-centric improvement, error analysis
 - `v0.3` — Milestone 3: FaceNet embeddings, CLI, Docker, concurrent load test
+- `v1.0-final` — Milestone 4: final audit, CPU profiling with batch-size sensitivity, System Card, reproducibility checklist
 
 ## Reproducibility Notes
 - Default workflow uses fixed seed `42`.
