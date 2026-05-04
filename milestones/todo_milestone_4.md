@@ -155,6 +155,20 @@ Required sections:
   - final System Card path
   - any caveats the README should mention about confidence interpretation or out-of-scope uses
 
+### Pramod handoff status for Arun
+- Completed: `outputs/final_system_summary.json`
+- Completed: `scripts/validate_release_alignment.py`
+- Completed: `reports/milestone4_system_card.pdf`
+- Final threshold: `0.3969849246231156`
+- Threshold-selection split: `val`
+- Threshold-selection rule: `balanced_acc`
+- Final embedding run IDs: `run_06` (val sweep), `run_07` (test final)
+- Final test metrics: balanced accuracy `0.980`, F1 `0.980`, EER `0.024`, TP `489`, FP `9`, TN `491`, FN `11`
+- Final System Card path: `reports/milestone4_system_card.pdf`
+- README caveat: confidence is a sigmoid transform of distance from the threshold, not a calibrated probability of identity match
+- README caveat: intended for benchmark/course use, not high-stakes or surveillance deployment
+- README caveat: do not make subgroup fairness claims because this project does not include reliable demographic metadata
+
 ---
 
 ## Arun's Tasks
@@ -340,11 +354,11 @@ uv run python scripts/validate_release_alignment.py
 ## Definition of Done (Milestone 4)
 
 **Pramod**
-- [ ] Final embedding-based system version frozen and recorded in `outputs/final_system_summary.json`
-- [ ] Final threshold, rule, split, and key metrics confirmed from `outputs/runs_log.json`
-- [ ] Release-alignment helper added (`scripts/validate_release_alignment.py` or equivalent)
-- [ ] `reports/milestone4_system_card.pdf` completed
-- [ ] System Card includes intended use, limitations, failure modes, fairness-risk discussion, operating threshold, metrics, and reproducibility pointer
+- [x] Final embedding-based system version frozen and recorded in `outputs/final_system_summary.json`
+- [x] Final threshold, rule, split, and key metrics confirmed from `outputs/runs_log.json`
+- [x] Release-alignment helper added (`scripts/validate_release_alignment.py` or equivalent)
+- [x] `reports/milestone4_system_card.pdf` completed
+- [x] System Card includes intended use, limitations, failure modes, fairness-risk discussion, operating threshold, metrics, and reproducibility pointer
 
 **Arun**
 - [ ] `scripts/profile_inference.py` (or equivalent profiling entrypoint) implemented and working
