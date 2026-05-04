@@ -1,0 +1,50 @@
+{
+  "release_candidate": "milestone4_final",
+  "embedding_model": "facenet",
+  "embedding_dim": 512,
+  "threshold": 0.3969849246231156,
+  "threshold_selection_split": "val",
+  "threshold_selection_rule": "balanced_acc",
+  "score_direction": "higher_is_same",
+  "confidence_formula": "sigmoid(10 * (score - threshold)) = 1 / (1 + exp(-10 * (score - threshold)))",
+  "final_run_ids": [
+    "run_06",
+    "run_07"
+  ],
+  "metric_sources": {
+    "threshold_run_id": "run_06",
+    "final_test_run_id": "run_07"
+  },
+  "test_metrics": {
+    "balanced_accuracy": 0.98,
+    "f1": 0.98,
+    "eer": 0.024,
+    "tp": 489,
+    "fp": 9,
+    "tn": 491,
+    "fn": 11
+  },
+  "artifacts": {
+    "readme": "README.md",
+    "inference_config": "configs/inference_config.json",
+    "runs_log": "outputs/runs_log.json",
+    "system_card_source": "reports/milestone4_system_card.md",
+    "system_card_pdf": "reports/milestone4_system_card.pdf",
+    "profiling_report_pdf": "reports/milestone4_profiling_report.pdf",
+    "reproducibility_checklist": "reports/milestone4_reproducibility_checklist.md"
+  },
+  "artifact_paths": {
+    "readme": "README.md",
+    "inference_config": "configs/inference_config.json",
+    "runs_log": "outputs/runs_log.json",
+    "system_card_source": "reports/milestone4_system_card.md",
+    "system_card_pdf": "reports/milestone4_system_card.pdf",
+    "profiling_report_pdf": "reports/milestone4_profiling_report.pdf",
+    "reproducibility_checklist": "reports/milestone4_reproducibility_checklist.md"
+  },
+  "release_caveats": [
+    "Confidence is a monotonic transform of margin from the operating threshold, not a calibrated probability of identity match.",
+    "The model assumes aligned face crops as input and does not perform face detection or identity enrollment.",
+    "Evaluation is derived from LFW and should not be generalized to subgroup fairness claims because reliable demographic metadata is not available in this project."
+  ]
+}

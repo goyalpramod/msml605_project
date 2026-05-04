@@ -212,6 +212,7 @@ data/lfw_home
 #outputs
 outputs/*
 !outputs/.gitkeep
+!outputs/final_system_summary.json
 !outputs/runs_log.json
 !outputs/roc_*.png
 !outputs/cm_*.png
