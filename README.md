@@ -530,21 +530,44 @@ data/lfw_home/lfw_funneled/Aaron_Peirsol/Aaron_Peirsol_0001.jpg,data/lfw_home/lf
 Milestone 4 freezes the Milestone 3 embedding-based system as the final release. No new modeling work — the focus is on responsible-ML documentation, CPU profiling, reproducibility, and a clean-clone release path.
 
 ### Final pipeline summary
-Input image pair → FaceNet preprocessing (resize 160×160, normalize to `[-1, 1]`) → InceptionResnetV1 forward pass (VGGFace2 weights) → 512-dim L2-normalized embeddings → cosine similarity → threshold `0.397` → decision (SAME/DIFFERENT) plus calibrated sigmoid confidence in `(0, 1)`.
+Input image pair → FaceNet preprocessing (resize 160×160, normalize to `[-1, 1]`) → InceptionResnetV1 forward pass (VGGFace2 weights) → 512-dim L2-normalized embeddings → cosine similarity → threshold `0.3969849246231156` → decision (SAME/DIFFERENT) plus calibrated sigmoid confidence in `(0, 1)`.
+
+### Final test metrics
+
+These are the canonical released numbers, frozen in [`outputs/final_system_summary.json`](outputs/final_system_summary.json) and traceable to `run_07` in [`outputs/runs_log.json`](outputs/runs_log.json).
+
+|       Metric      |  Value |
+| :---------------- | :----: |
+| Balanced accuracy | 0.980  |
+| F1                | 0.980  |
+| Equal error rate  | 0.024  |
+| TP                | 489    |
+| FP                | 9      |
+| TN                | 491    |
+| FN                | 11     |
+
+### Release caveats
+
+- **Confidence is a margin, not a probability.** The reported confidence is `sigmoid(10 * (score - threshold))`, a smooth function of distance from the operating threshold. A confidence of `0.90` does not mean a 90% probability that the two faces match.
+- **Benchmark scope only.** This system is intended for course demonstration and reproducible LFW-based evaluation. It is not validated for surveillance, law-enforcement, or any high-stakes identity verification deployment.
+- **No subgroup fairness claims.** The project does not include reliable demographic metadata for the evaluation data, so this release does not support quantitative subgroup fairness claims. Fairness-related risks exist and are discussed qualitatively in the System Card.
 
 ### Final artifacts
 
-| Artifact | Path |
-|---|---|
-| Final config (single source of truth) | `configs/inference_config.json` |
-| Final system summary | `outputs/final_system_summary.json` |
-| Runs log (run_06 sweep, run_07 final) | `outputs/runs_log.json` |
-| CPU profiling summary (JSON) | `outputs/profiling/cpu_profile_summary.json` |
-| CPU profiling summary (sidecar table) | `outputs/profiling/cpu_profile_summary.md` |
-| Profiling report | `reports/milestone4_profiling_report.pdf` (source: `reports/milestone4_profiling_report.md`) |
-| System Card | `reports/milestone4_system_card.pdf` |
-| Reproducibility checklist | `reports/milestone4_reproducibility_checklist.md` |
-| Final tag | `v1.0-final` |
+|                Artifact                | Path |
+| :------------------------------------- | :--- |
+| Final config (single source of truth)  | `configs/inference_config.json` |
+| Final system summary                   | `outputs/final_system_summary.json` |
+| Runs log (run_06 sweep, run_07 final)  | `outputs/runs_log.json` |
+| CPU profiling summary (JSON)           | `outputs/profiling/cpu_profile_summary.json` |
+| CPU profiling summary (sidecar table)  | `outputs/profiling/cpu_profile_summary.md` |
+| Profiling report (PDF)                 | `reports/milestone4_profiling_report.pdf` |
+| Profiling report (markdown source)     | `reports/milestone4_profiling_report.md` |
+| System Card (PDF)                      | `reports/milestone4_system_card.pdf` |
+| System Card (markdown source)          | `reports/milestone4_system_card.md` |
+| Reproducibility checklist              | `reports/milestone4_reproducibility_checklist.md` |
+| Release-alignment validator            | `scripts/validate_release_alignment.py` |
+| Final tag                              | `v1.0-final` |
 
 ### CPU baseline (from `outputs/profiling/cpu_profile_summary.json`)
 On a 32-logical-core AMD64 / Windows 11 / `torch 2.11.0+cpu` machine, the final verifier processes a single pair in **81.3 ms end-to-end** (preprocess 1.16 ms / embed 79.96 ms / score 0.21 ms) at **~12.3 pairs/s**. Stacked batching scales throughput to **~81 pairs/s at batch size 16**. Embedding accounts for >93% of latency at every tested batch size. See [`reports/milestone4_profiling_report.md`](reports/milestone4_profiling_report.md) for the full per-stage and batch-size table.

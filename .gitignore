@@ -216,3 +216,6 @@ outputs/*
 !outputs/runs_log.json
 !outputs/roc_*.png
 !outputs/cm_*.png
+!outputs/profiling/
+!outputs/profiling/cpu_profile_summary.json
+!outputs/profiling/cpu_profile_summary.md

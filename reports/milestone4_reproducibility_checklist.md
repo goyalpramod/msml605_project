@@ -1,9 +1,11 @@
-# Milestone 4 — Reproducibility Checklist
+# Milestone 4: Reproducibility Checklist
 
-This checklist reproduces every Milestone 4 artifact from a clean clone. Both `uv` (recommended) and classic `venv + pip` paths are shown — pick one.
+This checklist reproduces every Milestone 4 artifact from a clean clone. Both `uv` (recommended) and classic `venv + pip` paths are shown; pick one.
 
 **Final tag:** `v1.0-final`
-**Final config:** `configs/inference_config.json` (threshold 0.397, FaceNet, embedding dim 512)
+**Final config:** `configs/inference_config.json` (threshold `0.3969849246231156`, FaceNet, embedding dim 512)
+**Final system summary:** `outputs/final_system_summary.json` (single source of truth for release metadata, run IDs, and test metrics)
+**Companion documents:** [`reports/milestone4_system_card.pdf`](milestone4_system_card.pdf) (responsible-ML audit), [`reports/milestone4_profiling_report.pdf`](milestone4_profiling_report.pdf) (CPU profile)
 
 ---
 
@@ -20,8 +22,10 @@ This checklist reproduces every Milestone 4 artifact from a clean clone. Both `u
 ```bash
 git clone <repo-url> msml605_project
 cd msml605_project
-git checkout v1.0-final     # use the final tag
+git checkout v1.0-final     # grader path: use the final tag
 ```
+
+> Pre-tag testing (used during the clean-clone gate before the tag is pushed): stay on `main` and skip the `git checkout` line. The contents of `main` immediately prior to tagging are identical to what `v1.0-final` will point at.
 
 ---
 
@@ -128,6 +132,8 @@ uv run python -m pytest tests/ -v
 python -m pytest tests/ -v
 ```
 
+The suite includes `tests/test_final_release_alignment.py`, which exercises the release-alignment validator against a synthetic consistent contract, a synthetic inconsistent contract, and the actual repo state. All three must pass.
+
 ---
 
 ## 8. Run the release-alignment check
@@ -140,7 +146,14 @@ uv run python scripts/validate_release_alignment.py
 python scripts/validate_release_alignment.py
 ```
 
-Confirms that `configs/inference_config.json`, `outputs/final_system_summary.json`, and `outputs/runs_log.json` all describe the same final system.
+Confirms that `configs/inference_config.json`, `outputs/final_system_summary.json`, and `outputs/runs_log.json` all describe the same final system. Specifically, the validator checks:
+
+- `embedding_model`, `embedding_dim`, `threshold`, `score_direction`, and `confidence_formula` agree between the config and the summary.
+- Every `final_run_ids` entry in the summary exists in the runs log.
+- `run_06` is a `val` sweep using the same threshold and selection rule as the summary.
+- `run_07` is a `test` final run using the same threshold and same metrics (balanced accuracy, F1, EER, TP/FP/TN/FN) as the summary.
+- Every artifact path declared by the summary's `artifact_paths` exists on disk.
+- The three required final report files are present: profiling report PDF, reproducibility checklist, and System Card PDF.
 
 ---
 
@@ -158,15 +171,18 @@ ruff check . && ruff format --check .
 
 ## Artifact locations
 
-| Artifact | Path |
-|---|---|
-| Final config (single source of truth) | `configs/inference_config.json` |
-| Final system summary | `outputs/final_system_summary.json` |
-| Runs log | `outputs/runs_log.json` |
-| CPU profiling summary (JSON) | `outputs/profiling/cpu_profile_summary.json` |
-| CPU profiling summary (sidecar table) | `outputs/profiling/cpu_profile_summary.md` |
-| Profiling report (PDF) | `reports/milestone4_profiling_report.pdf` |
-| Profiling report (markdown source) | `reports/milestone4_profiling_report.md` |
-| System Card (PDF) | `reports/milestone4_system_card.pdf` |
-| Reproducibility checklist | `reports/milestone4_reproducibility_checklist.md` |
-| Final tag | `v1.0-final` |
+|                Artifact                | Path |
+| :------------------------------------- | :--- |
+| Final config (single source of truth)  | `configs/inference_config.json` |
+| Final system summary                   | `outputs/final_system_summary.json` |
+| Runs log                               | `outputs/runs_log.json` |
+| CPU profiling summary (JSON)           | `outputs/profiling/cpu_profile_summary.json` |
+| CPU profiling summary (sidecar table)  | `outputs/profiling/cpu_profile_summary.md` |
+| Profiling report (PDF)                 | `reports/milestone4_profiling_report.pdf` |
+| Profiling report (markdown source)     | `reports/milestone4_profiling_report.md` |
+| System Card (PDF)                      | `reports/milestone4_system_card.pdf` |
+| System Card (markdown source)          | `reports/milestone4_system_card.md` |
+| Reproducibility checklist              | `reports/milestone4_reproducibility_checklist.md` |
+| Release-alignment validator            | `scripts/validate_release_alignment.py` |
+| Release-alignment tests                | `tests/test_final_release_alignment.py` |
+| Final tag                              | `v1.0-final` |

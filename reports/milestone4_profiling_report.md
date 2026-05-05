@@ -1,19 +1,23 @@
 # MSAI605: Project Milestone 4 Profiling Report
 
-**Authors:** Arun Kulkarni, Pramod Goyal
+**Authors:** Arun Kulkarni, Pramod Goyal<br>
 **Course:** MSAI605
 
 ---
 
 ## Milestone 4: CPU Profiling Report
 
-**System under test:** final embedding-based face verifier (FaceNet / InceptionResnetV1, VGGFace2 weights, 512-d L2-normalized embeddings, cosine similarity threshold 0.397).
-
+**System version:** `milestone4_final`<br>
+**Planned release tag:** `v1.0-final`<br>
+**System under test:** final embedding-based face verifier (FaceNet / InceptionResnetV1, VGGFace2 weights, 512-d L2-normalized embeddings, cosine similarity threshold `0.3969849246231156`).<br>
 **Submission baseline:** CPU-only.
 
 **Source artifacts:**
-- profiling script: `scripts/profile_inference.py`
-- machine-readable summary: `outputs/profiling/cpu_profile_summary.json`
+- Profiling script: `scripts/profile_inference.py`
+- Machine-readable summary: `outputs/profiling/cpu_profile_summary.json`
+- Final system summary: `outputs/final_system_summary.json`
+- Companion System Card: `reports/milestone4_system_card.pdf`
+- Reproducibility checklist: `reports/milestone4_reproducibility_checklist.md`
 
 ---
 
